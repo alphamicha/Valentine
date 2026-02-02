@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine 💘</title>
+
+  <style>
+    :root{
+      --bg1:#ffd6e7;
+      --bg2:#ffeef6;
+      --card:#ffffffcc;
+      --yes:#ff3b7a;
+      --yesHover:#ff1f68;
+    }
+
+    *{
+      box-sizing:border-box;
+      font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body{
+      margin:0;
+      height:100vh;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .card{
+      background:var(--card);
+      padding:32px;
+      border-radius:24px;
+      text-align:center;
+      box-shadow:0 20px 40px rgba(0,0,0,0.15);
+      position:relative;
+      width:320px;
+    }
+
+    h1{
+      margin-bottom:20px;
+      font-size:1.4rem;
+      color:#333;
+    }
+
+    img{
+      max-width:220px;
+      border-radius:16px;
+      margin-bottom:20px;
+    }
+
+    .buttons{
+      position:relative;
+      height:80px;
+    }
+
+    button{
+      padding:12px 22px;
+      border-radius:999px;
+      border:none;
+      font-size:1rem;
+      cursor:pointer;
+      position:absolute;
+      transition:transform 0.2s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #yes{
+      background:var(--yes);
+      color:#fff;
+      left:40px;
+    }
+
+    #yes:hover{
+      background:var(--yesHover);
+    }
+
+    #no{
+      background:#eee;
+      color:#333;
+      right:40px;
+      top:0;
+    }
+
+    .success{ display:none; }
+  </style>
+</head>
+
+<body>
+  <div class="card" id="card">
+    <h1>Lita, will you be my Valentine? 💘</h1>
+
+    <img src="dog.gif" alt="cute dog" />
+
+    <div class="buttons" id="arena">
+      <button id="yes">Yes 💖</button>
+      <button id="no">No 🙃</button>
+    </div>
+  </div>
+
+  <div class="card success" id="success">
+    <h1>YAY!! 💕🥰</h1>
+    <p>You made my day.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const card = document.getElementById("card");
+    const success = document.getElementById("success");
+    const arena = document.getElementById("arena"); // movement boundary
+
+    function moveNo(x, y) {
+      const b = noBtn.getBoundingClientRect();
+      const z = arena.getBoundingClientRect();
+
+      // pointer distance to button center
+      const cx = b.left + b.width / 2;
+      const cy = b.top + b.height / 2;
+      const dx = cx - x;
+      const dy = cy - y;
+      const d  = Math.hypot(dx, dy);
+
+      // harder: bigger trigger radius
+      if (d < 220) {
+        const mag = Math.hypot(dx, dy) || 1;
+        const nx = dx / mag;
+        const ny = dy / mag;
+
+        // harder: bigger jump + randomness
+        const jump = 260 + Math.random() * 120;
+
+        let newLeft = (b.left - z.left) + nx * jump;
+        let newTop  = (b.top  - z.top)  + ny * jump;
+
+        // harder: occasional teleport
+        if (Math.random() < 0.25) {
+          newLeft = Math.random() * (z.width  - b.width);
+          newTop  = Math.random() * (z.height - b.height);
+        }
+
+        // clamp within arena
+        newLeft = Math.max(0, Math.min(z.width  - b.width,  newLeft));
+        newTop  = Math.max(0, Math.min(z.height - b.height, newTop));
+
+        // important: switch from right-based positioning to left-based cleanly
+        noBtn.style.right = "auto";
+        noBtn.style.left  = newLeft + "px";
+        noBtn.style.top   = newTop  + "px";
+      }
+    }
+
+    // Desktop
+    document.addEventListener("mousemove", (e) => moveNo(e.clientX, e.clientY));
+
+    // Mobile
+    document.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      moveNo(t.clientX, t.clientY);
+    }, { passive: true });
+
+    // If they somehow tap it on mobile, it escapes again
+    noBtn.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      const z = arena.getBoundingClientRect();
+      moveNo(
+        z.left + Math.random() * z.width,
+        z.top  + Math.random() * z.height
+      );
+    }, { passive: false });
+
+    yesBtn.onclick = () => {
+      card.style.display = "none";
+      success.style.display = "block";
+
+      confetti({
+        particleCount: 180,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    };
+  </script>
+</body>
+</html>
