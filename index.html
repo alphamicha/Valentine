@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 25.8.4.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="00:00:00"/>
+	<style type="text/css">
+		@page { size: 8.27in 11.69in; margin: 0.79in }
+		p { margin-bottom: 0.1in; line-height: 115%; background: transparent }
+		pre { font-size: 10pt; font-family: "Liberation Mono", monospace; background: transparent }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;title&gt;Valentine 💘&lt;/title&gt;
+
+  &lt;style&gt;
+    :root{
+      --bg1:#ffd6e7;
+      --bg2:#ffeef6;
+      --card:#ffffffcc;
+      --yes:#ff3b7a;
+      --yesHover:#ff1f68;
+    }
+
+    *{
+      box-sizing:border-box;
+      font-family:-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, sans-serif;
+    }
+
+    body{
+      margin:0;
+      height:100vh;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .card{
+      background:var(--card);
+      padding:32px;
+      border-radius:24px;
+      text-align:center;
+      box-shadow:0 20px 40px rgba(0,0,0,0.15);
+      position:relative;
+      width:320px;
+    }
+
+    h1{
+      margin-bottom:20px;
+      font-size:1.4rem;
+      color:#333;
+    }
+
+    img{
+      max-width:220px;
+      border-radius:16px;
+      margin-bottom:20px;
+    }
+
+    .buttons{
+      position:relative;
+      height:80px;
+    }
+
+    button{
+      padding:12px 22px;
+      border-radius:999px;
+      border:none;
+      font-size:1rem;
+      cursor:pointer;
+      position:absolute;
+      transition:transform 0.2s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #yes{
+      background:var(--yes);
+      color:#fff;
+      left:40px;
+    }
+
+    #yes:hover{
+      background:var(--yesHover);
+    }
+
+    #no{
+      background:#eee;
+      color:#333;
+      right:40px;
+      top:0;
+    }
+
+    .success{ display:none; }
+  &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;card&quot;&gt;
+    &lt;h1&gt;Lita, will you be my Valentine? 💘&lt;/h1&gt;
+
+    &lt;img src=&quot;dog.gif&quot; alt=&quot;cute dog&quot; /&gt;
+
+    &lt;div class=&quot;buttons&quot; id=&quot;arena&quot;&gt;
+      &lt;button id=&quot;yes&quot;&gt;Yes 💖&lt;/button&gt;
+      &lt;button id=&quot;no&quot;&gt;No 🙃&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;card success&quot; id=&quot;success&quot;&gt;
+    &lt;h1&gt;YAY!! 💕🥰&lt;/h1&gt;
+    &lt;p&gt;You made my day.&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js&quot;&gt;&lt;/script&gt;
+
+  &lt;script&gt;
+    const noBtn = document.getElementById(&quot;no&quot;);
+    const yesBtn = document.getElementById(&quot;yes&quot;);
+    const card = document.getElementById(&quot;card&quot;);
+    const success = document.getElementById(&quot;success&quot;);
+    const arena = document.getElementById(&quot;arena&quot;); // movement boundary
+
+    function moveNo(x, y) {
+      const b = noBtn.getBoundingClientRect();
+      const z = arena.getBoundingClientRect();
+
+      // pointer distance to button center
+      const cx = b.left + b.width / 2;
+      const cy = b.top + b.height / 2;
+      const dx = cx - x;
+      const dy = cy - y;
+      const d  = Math.hypot(dx, dy);
+
+      // harder: bigger trigger radius
+      if (d &lt; 220) {
+        const mag = Math.hypot(dx, dy) || 1;
+        const nx = dx / mag;
+        const ny = dy / mag;
+
+        // harder: bigger jump + randomness
+        const jump = 260 + Math.random() * 120;
+
+        let newLeft = (b.left - z.left) + nx * jump;
+        let newTop  = (b.top  - z.top)  + ny * jump;
+
+        // harder: occasional teleport
+        if (Math.random() &lt; 0.25) {
+          newLeft = Math.random() * (z.width  - b.width);
+          newTop  = Math.random() * (z.height - b.height);
+        }
+
+        // clamp within arena
+        newLeft = Math.max(0, Math.min(z.width  - b.width,  newLeft));
+        newTop  = Math.max(0, Math.min(z.height - b.height, newTop));
+
+        // important: switch from right-based positioning to left-based cleanly
+        noBtn.style.right = &quot;auto&quot;;
+        noBtn.style.left  = newLeft + &quot;px&quot;;
+        noBtn.style.top   = newTop  + &quot;px&quot;;
+      }
+    }
+
+    // Desktop
+    document.addEventListener(&quot;mousemove&quot;, (e) =&gt; moveNo(e.clientX, e.clientY));
+
+    // Mobile
+    document.addEventListener(&quot;touchstart&quot;, (e) =&gt; {
+      const t = e.touches[0];
+      moveNo(t.clientX, t.clientY);
+    }, { passive: true });
+
+    // If they somehow tap it on mobile, it escapes again
+    noBtn.addEventListener(&quot;touchend&quot;, (e) =&gt; {
+      e.preventDefault();
+      const z = arena.getBoundingClientRect();
+      moveNo(
+        z.left + Math.random() * z.width,
+        z.top  + Math.random() * z.height
+      );
+    }, { passive: false });
+
+    yesBtn.onclick = () =&gt; {
+      card.style.display = &quot;none&quot;;
+      success.style.display = &quot;block&quot;;
+
+      confetti({
+        particleCount: 180,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    };
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</body>
+</html>
